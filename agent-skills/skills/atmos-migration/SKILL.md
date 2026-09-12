@@ -26,6 +26,7 @@ references:
   - references/from-okta-cli.md
   - references/to-native-ci.md
   - references/to-native-ci-scanners.md
+  - references/from-rain.md
 ---
 
 # Migrating to Atmos
@@ -55,6 +56,7 @@ For full tutorials for end users, see:
 - [Migrating from Makefiles](https://atmos.tools/migration/makefile)
 - [Migrating from Justfiles](https://atmos.tools/migration/justfile)
 - [Migrating from Taskfile.yml](https://atmos.tools/migration/taskfile)
+- [Migrating from Rain / Raw CloudFormation](https://atmos.tools/migration/from-rain)
 
 ## Terraform or OpenTofu
 
@@ -118,6 +120,7 @@ reference file:
 | `aqua.yaml` (Aqua CLI) for tool versions                             | [from-aqua.md](references/from-aqua.md) |
 | CI on GitHub Actions (setup-terraform, configure-aws-credentials, dflook, tfcmt) | [to-native-ci.md](references/to-native-ci.md) |
 | Scanner actions (TFLint, Checkov, Trivy, KICS, Infracost, tfsec) | [to-native-ci-scanners.md](references/to-native-ci-scanners.md) |
+| User is migrating off Rain / raw CloudFormation                      | [from-rain.md](references/from-rain.md) |
 
 The remote-state-bridge pattern makes progressive migration possible. It lets a team migrate one
 component at a time. Without it, the team must migrate everything at once. Use this pattern when
