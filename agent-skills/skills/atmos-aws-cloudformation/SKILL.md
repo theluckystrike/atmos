@@ -9,14 +9,9 @@ metadata:
 
 # Atmos Native AWS CloudFormation Components
 
-Use this skill for the **native `aws/cloudformation`** component type
-(`components."aws/cloudformation"`). It deploys CloudFormation stacks directly through the
-**AWS SDK for Go v2** — no `aws` CLI, and no `cfn`/`sam`/`Rain` binary. `aws/cloudformation` is the
-first member of an `aws/*` namespace for AWS-native primitives that bypass Terraform.
-
-This feature is **experimental** — the nested command group carries the same experimental
-annotation pattern `atmos terraform backend` uses; the top-level `aws` command group itself stays
-stable.
+Use this skill for native `components."aws/cloudformation"` stacks. Atmos deploys them through
+the **AWS SDK for Go v2**, without an `aws`, `cfn`, `sam`, or Rain binary. This first `aws/*`
+component and its nested commands are **experimental**; the top-level `aws` group stays stable.
 
 ## Related Skills
 
