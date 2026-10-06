@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation"
+	cockroachErrors "github.com/cockroachdb/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -72,7 +74,7 @@ func TestMutuallyExclusiveStackPolicyHint(t *testing.T) {
 		"stack_policy": map[string]any{"file": "policy.json", "body": "{}"},
 	})
 	require.ErrorIs(t, err, errUtils.ErrAwsCloudFormationStackPolicyFileAndBodyMutuallyExclusive)
-	assert.Contains(t, errUtils.Format(err, errUtils.FormatterConfig{}), "stack_policy.body")
+	assert.Contains(t, strings.Join(cockroachErrors.GetAllHints(err), "\n"), "stack_policy.body")
 }
 
 // TestInlineStackPolicyBodyNeedsNoComponentDirectory verifies the inline policy is used without any
