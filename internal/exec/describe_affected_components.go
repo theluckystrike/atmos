@@ -1187,7 +1187,7 @@ func getSecretFileDependencies(atmosConfig *schema.AtmosConfiguration, stackName
 	if len(set.Files) == 0 && len(set.Folders) == 0 {
 		return nil
 	}
-	deps := make([]schema.ComponentDependency, 0, len(set.Files)+len(set.Folders))
+	deps := make([]schema.ComponentDependency, 0, len(set.Files))
 	for _, f := range set.Files {
 		deps = append(deps, schema.ComponentDependency{Kind: "file", Path: f})
 	}
