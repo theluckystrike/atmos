@@ -47,6 +47,7 @@ export default function SidebarNavigator({
   const headingRef = useRef<HTMLHeadingElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const previousSection = useRef(section);
+  const preserveScrollForPath = useRef<string | null>(null);
 
   useEffect(() => {
     const changed = previousSection.current !== section;
@@ -87,6 +88,11 @@ export default function SidebarNavigator({
   // or move the reader away from a filter or the all-sections view.
   useEffect(() => {
     if (filtering || section === null) return;
+    // Following a shared reference should leave the clicked sidebar row in view.
+    if (preserveScrollForPath.current === normalizePath(activePath)) {
+      preserveScrollForPath.current = null;
+      return;
+    }
     const timer = window.setTimeout(() => {
       const panel = rootRef.current?.querySelector<HTMLElement>(
         `[data-section="${section}"]`,
@@ -147,6 +153,10 @@ export default function SidebarNavigator({
     if (!followsLink) return;
     setQuery("");
     if ("href" in item && item.href) {
+      preserveScrollForPath.current =
+        item.customProps?.navigationReference || item.customProps?.yamlReference
+          ? normalizePath(item.href)
+          : null;
       const targetSection = findSection(prepared, item.href);
       setView({ path: activePath, section: targetSection });
       if (targetSection !== null)

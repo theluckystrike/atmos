@@ -287,6 +287,16 @@ const overview = (kind) =>
     ? "stacks/components/aws-cloudformation"
     : `stacks/components/${kind}${kind === "terraform" ? "/index" : ""}`;
 
+/** Link the placeholder to its definition while keeping its field tree expandable. */
+function componentNameFields(kind, keys) {
+  return category(
+    "<name>",
+    keys.map((key) => field(key, kind, "component")),
+    "stacks/components/name",
+    "Component instance",
+  );
+}
+
 // Register global field pages first as their canonical navigation entries.
 const items = [
   "auth",
@@ -314,14 +324,7 @@ items.push(
       .map(([kind, keys]) =>
         category(
           kind,
-          [
-            category(
-              "<name>",
-              keys.map((key) => field(key, kind, "component")),
-              undefined,
-              "Component instance",
-            ),
-          ],
+          [componentNameFields(kind, keys)],
           overview(kind),
         ),
       ),

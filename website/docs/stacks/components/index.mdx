@@ -50,6 +50,13 @@ A component consists of infrastructure-as-code business logic (e.g., a Terraform
 
 :::
 
+## Naming a component instance
+
+`<name>` in `components.<type>.<name>` is a free-form placeholder for the key
+you give a component in a stack manifest, such as `vpc` in
+`components.terraform.vpc`. See [naming a component instance](/stacks/components/name)
+for an example and how this key relates to the component directory.
+
 ## Common Configuration Sections
 
 Common configuration sections are listed below. Support varies by component type; the sidebar lists supported fields beneath each type’s `<name>` entry.

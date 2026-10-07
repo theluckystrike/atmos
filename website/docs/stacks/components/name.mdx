@@ -1,0 +1,27 @@
+---
+title: Naming a component instance
+description: Choose the free-form name that replaces <name> in a stack component configuration.
+id: name
+slug: /stacks/components/name
+---
+
+`<name>` in `components.<type>.<name>` means **the name you choose for one
+component instance**. It is a free-form placeholder, not a literal YAML key.
+For example, `vpc` replaces `<name>` here:
+
+```yaml
+components:
+  terraform:
+    vpc:
+      vars:
+        environment: dev
+```
+
+The full configuration path is `components.terraform.vpc`. Use that name when
+running the component, for example `atmos terraform plan vpc -s <stack>`.
+If the implementation lives in a differently named component directory, set
+[`metadata.component`](/stacks/components/component-metadata) to that directory
+name. The `vpc` key remains the name of this configured instance.
+
+See [component configuration](/stacks/components) for the fields available
+beneath `<name>`.

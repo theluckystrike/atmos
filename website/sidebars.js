@@ -314,6 +314,7 @@ module.exports = {
                             type: 'category',
                             label: '<name>',
                             collapsed: false,
+                            link: {type: 'doc', id: 'workflows/workflows/workflow/name'},
                             items: [
                                 {type: 'doc', id: 'workflows/workflows/workflow/stack', label: 'stack'},
                                 {type: 'doc', id: 'workflows/workflows/workflow/env', label: 'env'},
