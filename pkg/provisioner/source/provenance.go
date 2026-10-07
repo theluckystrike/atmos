@@ -45,6 +45,23 @@ func provenancePath(dir string) string {
 	return filepath.Join(dir, workdir.AtmosDir, ProvenanceFile)
 }
 
+// sharedSourceExpired applies remote-source TTLs to directories provisioned by Atmos.
+// Unmarked directories may contain authored files; refresh them explicitly with source pull --force.
+func sharedSourceExpired(dir string, spec *schema.VendorComponentSource) (bool, string) {
+	if spec.TTL == "" || isLocalSource(spec.Uri) {
+		return false, ""
+	}
+	data, err := os.ReadFile(provenancePath(dir))
+	if err != nil {
+		return false, ""
+	}
+	var provenance Provenance
+	if err := json.Unmarshal(data, &provenance); err != nil || provenance.ProvisionedAt.IsZero() {
+		return false, ""
+	}
+	return isSourceCacheExpired(spec.TTL, provenance.ProvisionedAt)
+}
+
 // WriteProvenance writes the provisioner marker into dir.
 func WriteProvenance(dir string, p *Provenance) error {
 	defer perf.Track(nil, "source.WriteProvenance")()

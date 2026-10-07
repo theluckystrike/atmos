@@ -186,6 +186,10 @@ func applyGlobalTTLDefault(sourceSpec *schema.VendorComponentSource, atmosConfig
 		if atmosConfig.Components.Packer.Source != nil {
 			sourceSpec.TTL = atmosConfig.Components.Packer.Source.TTL
 		}
+	case cfg.CloudFormationComponentType:
+		if atmosConfig.Components.CloudFormation.Source != nil {
+			sourceSpec.TTL = atmosConfig.Components.CloudFormation.Source.TTL
+		}
 	}
 }
 
@@ -323,17 +327,18 @@ func determineSourceTargetDirectory(
 //   - Version has changed from what's in metadata.
 //   - URI has changed from what's in metadata.
 //   - No metadata exists (fresh workdir).
+//   - A remote source TTL expires (workdir or a shared directory with provenance).
 //
-// Returns (false, "") if the existing workdir is up-to-date.
+// Returns (false, "") if the cached source can be reused.
 func needsProvisioning(targetDir string, sourceSpec *schema.VendorComponentSource, isWorkdir bool) (bool, string) {
 	// Check if directory exists and has content.
 	if !isNonEmptyDir(targetDir) {
 		return true, ""
 	}
 
-	// For non-workdir targets, existence is sufficient - no metadata tracking.
+	// Shared directories retain their contents unless an owned remote source expires.
 	if !isWorkdir {
-		return false, ""
+		return sharedSourceExpired(targetDir, sourceSpec)
 	}
 
 	// Directory exists and has content - check metadata for version/URI changes.

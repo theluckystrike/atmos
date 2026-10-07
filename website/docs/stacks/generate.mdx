@@ -276,15 +276,12 @@ When enabled, Atmos generates files from the `generate` section before executing
 
 ### Supported Component Types
 
-The `generate` section applies to Terraform components and, with the same syntax,
-to native Kubernetes and Helm components. CloudFormation components do not
-support `generate`: a `generate:` key on a CloudFormation component, under the
-`aws/cloudformation:` type-level section, or in CloudFormation `overrides` is a
-stack-processing error. The root-level stack `generate:` section is Terraform's
-global scope and is not applied to CloudFormation components. To produce a
-stack-specific CloudFormation template, use an inline `template:`, which Atmos
-renders with Go templates and YAML functions. See
-[CloudFormation inline templates](/stacks/components/aws-cloudformation#inline-templates-and-templating).
+The `generate` section supports Terraform, native Kubernetes, and Helm components.
+
+CloudFormation components use [inline templates](/stacks/components/aws-cloudformation#inline-templates-and-templating)
+for stack-specific template values. A `generate` key on a CloudFormation component,
+its type-level section, or its overrides is a stack-processing error. The root
+stack `generate` section applies to Terraform only.
 
 ## Examples
 

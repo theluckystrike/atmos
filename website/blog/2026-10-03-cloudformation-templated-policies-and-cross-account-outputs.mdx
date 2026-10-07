@@ -5,38 +5,39 @@ authors: [osterman]
 tags: [feature, experimental]
 ---
 
-A CloudFormation stack policy usually differs by environment: production protects a database from
-replacement, while development lets everything update. Until now a stack policy had to be a static JSON file,
-so each environment needed its own copy. Multi-account setups have a related problem: a stack that reads
-another stack's outputs must read them from the account where that stack actually lives, even when an
-operator runs the command with a different identity.
+Stack policies often differ by environment, so static policy files can require
+separate copies. Cross-account output references also need a consistent way to
+identify the account containing the producer stack. Atmos now supports inline
+policies and output lookups that follow the producer's deployment identity.
 
 <!--truncate-->
 
 ## The Problem
 
-Atmos already renders an inline `template:` with stack configuration, so a template can use `{{ .vars.stage }}`
-or `!store` like any other stack value. A stack policy could only come from a file, and files are used exactly
-as written.
+A file-based stack policy cannot use Atmos template values. Maintaining separate
+files makes it harder to keep shared policy rules consistent across environments.
 
-Output references (`!aws.cloudformation.output` and `atmos.Component`) need a predictable identity. If a
-producer stack is deployed into a shared-services account through its own deployment target, a consumer in a
-workload account must read it from shared services. Reading it with whatever identity the operator passed on
-the command line can find a same-named stack in the wrong account and silently use its values.
+Output lookups also need the producer's identity. Using a consumer's account
+can select a same-named stack with unrelated outputs.
 
 ## The Fix
 
-Stack policies can now be written inline with `stack_policy.body`. The body is rendered by Atmos templates and
-YAML functions, the same as an inline `template:`, and is mutually exclusive with `stack_policy.file`.
+### Inline Policies
 
-Output references now follow the producer's deployment target. When that target declares an identity, Atmos
-reads the outputs with it, whatever `--identity` the operator passed. A target without its own identity still
-uses the caller's credentials. The `describe component` and `describe stacks` commands resolve these
-references the same way a deployment does, so what you inspect is what you deploy.
+Use [`stack_policy.body`](/stacks/components/aws-cloudformation#cloudformation-specific-sections)
+for a policy rendered with Atmos templates and YAML functions. Choose either
+an inline body or `stack_policy.file`.
 
-Misconfigured deployment targets now fail early instead of falling back silently. Unknown keys or typos in a
-target's `auth` block, a target that selects no identity, and a `region` on a direct-deploy target (region
-comes from `settings.aws_cloudformation.region`) are all reported with the target and component named.
+### Cross-Account Outputs
+
+Both [`!aws.cloudformation.output`](/functions/yaml/aws.cloudformation.output)
+and [`atmos.Component`](/functions/template/atmos.Component) follow the producer's
+default direct target identity, even when the consumer passes `--identity`.
+Without target auth, the lookup uses the caller's credentials.
+
+The `describe component` and `describe stacks` commands use the same lookup
+rules as deployment. Invalid target settings fail with a correction hint; see
+[target validation](/stacks/components/aws-cloudformation#validation).
 
 ## How to Use It
 
@@ -70,7 +71,8 @@ components:
 Inline templates require `templates.settings.enabled: true`. CloudFormation dynamic references need one level
 of escaping so Atmos leaves them for CloudFormation: `'{{ "{{" }}resolve:ssm:/app/token}}'`.
 
-To pin where a producer's outputs are read, give its deployment target an identity:
+Add a default direct target to the producer component. Define the named identity
+in global or component auth:
 
 ```yaml
 components:
