@@ -78,14 +78,6 @@ dependencies, and be included in affected runs.
   <dd>Cross-component ordering for `--all` and `--affected` runs.</dd>
 </dl>
 
-CloudFormation components do not support a `generate:` section or isolated
-workdirs, and they do not support a `plugins:` section — there is no chart-style
-plugin system, unlike native Helm. A `generate:` key on a CloudFormation
-component, under the `aws/cloudformation:` type-level section, or in
-CloudFormation `overrides` is a stack-processing error. See
-[Inline Templates and Templating](#inline-templates-and-templating) for how to
-produce stack-specific templates instead.
-
 ## CloudFormation-Specific Sections
 
 <dl>
@@ -317,12 +309,6 @@ template: |
         Value: '{{ "{{" }}resolve:ssm:/my/param}}'
 ```
 
-CloudFormation components do not support `generate:` blocks. The error hint points
-to the supported alternatives: an inline `template:`
-(rendered by Atmos as described here) or a `path:` to a file you maintain. The
-root-level stack `generate:` section is Terraform's global scope and is not
-applied to CloudFormation components.
-
 ## Source Provisioning
 
 Point a component at a remote template through the top-level `source:`
@@ -396,12 +382,6 @@ source pull` and `source delete` act on exactly this directory.
 
 Archives that contain symbolic or hard links are extracted with each link as an empty regular file,
 and Atmos logs a warning naming the first one.
-
-`provision.workdir.enabled` only applies to a `source:`: it places the
-downloaded source in a per-instance directory. CloudFormation does not copy a
-local component into a workdir, so setting `provision.workdir.enabled: true` on a
-component without a `source:` fails before any AWS call. Remove the setting, or
-add a `source:`.
 
 :::note Manifest-driven vendoring is not supported
 `aws/cloudformation` components cannot be vendored through a `vendor.yaml`
